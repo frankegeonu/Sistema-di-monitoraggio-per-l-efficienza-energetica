@@ -7,24 +7,13 @@ Questo progetto realizza un sistema completo per il monitoraggio dei parametri a
 
 ### 1. Hardware (Produttore)
 * **Microcontrollore**: Arduino Uno.
-* **Sensore**: DHT22 per la misura di temperatura e umidità.
+* **Sensore**: DHT22 per la misura di temperatura e umidità durante la simulazione su wokwi e un DHT11 nel montaggio fisico.
 * **Segnalazione**: 3 LED (Rosso, Giallo, Verde) per il feedback visivo immediato sullo stato del microclima.
 
 ### 2. Software (Consumatore)
-* **Linguaggio**: Python 3.
+* **Linguaggio**: Python.
 * **Interfaccia Grafica**: Sviluppata con la libreria **Dear PyGui** per la visualizzazione in tempo reale.
 * **Comunicazione**: Seriale via USB con formato a pacchetti sincronizzati.
-
----
-
-## Strategie di Sincronizzazione e Scelte Progettuali
-
-Come richiesto dalle specifiche tecniche, il progetto adotta le seguenti strategie:
-
-* **Delay-less Coding (Arduino)**: La logica di campionamento è gestita tramite la funzione `millis()`. Questo evita blocchi del processore, garantendo che l'unità rimanga reattiva per la comunicazione seriale.
-* **Threading (Python)**: L'acquisizione dei dati avviene su un thread separato rispetto a quello della GUI. Questo impedisce il "freezing" dell'interfaccia durante l'attesa dei dati dalla porta seriale.
-* **Buffer e Queue**: Viene utilizzata una coda (`queue.Queue`) per il trasferimento sicuro dei dati tra il thread di lettura seriale e il thread di visualizzazione, garantendo l'integrità delle informazioni.
-* **Gestione della Memoria**: I dati vengono salvati periodicamente in un file CSV per l'analisi storica, agendo come un buffer persistente dei dati rilevati.
 
 ---
 
