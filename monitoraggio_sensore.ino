@@ -1,98 +1,103 @@
-// Example testing sketch for various DHT humidity/temperature sensors
-// Written by ladyada, public domain
-
-// REQUIRES the following Arduino libraries:
-// - DHT Sensor Library: https://github.com/adafruit/DHT-sensor-library
-// - Adafruit Unified Sensor Lib: https://github.com/adafruit/Adafruit_Sensor
 
 #include "DHT.h"
-
+#include <Servo.h> //per il servo
 #define DHTPIN 2     // Digital pin connected to the DHT sensor
-// Feather HUZZAH ESP8266 note: use pins 3, 4, 5, 12, 13 or 14 --
-// Pin 15 can work but DHT must be disconnected during program upload.
 
 // Uncomment whatever type you're using!
 #define DHTTYPE DHT22   // DHT 22
 //#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
 //#define DHTTYPE DHT21   // DHT 21 (AM2301)
 
-// Connect pin 1 (on the left) of the sensor to +5V
-// NOTE: If using a board with 3.3V logic like an Arduino Due connect pin 1
-// to 3.3V instead of 5V!
-// Connect pin 2 of the sensor to whatever your DHTPIN is
-// Connect pin 4 (on the right) of the sensor to GROUND
-// Connect a 10K resistor from pin 2 (data) to pin 1 (power) of the sensor
-
-// Initialize DHT sensor.
-// Note that older versions of this library took an optional third parameter to
-// tweak the timings for faster processors.  This parameter is no longer needed
-// as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht(DHTPIN, DHTTYPE);
+Servo mioServo; // Oggetto per gestire il servomotore
 
-// Definizione dei LED
+// Definizione dei PIN
 const int LED_RED    = 4;
 const int LED_YELLOW = 5;
 const int LED_GREEN  = 6;
+const int PIN_SERVO  = 9; //Servo
+
+// Variabili di temporizzazione e stato
+unsigned long lastTime = 0;
+int pos = 0;
+const long interval = 2000; //2 secondi di intervallo tra le varie letture
+bool ventolaAttiva = false; // Stato attuale del "ventilatore"
 
 void setup() {
   Serial.begin(9600);
-  Serial.println(F("DHTxx test!"));
+  Serial.println(F("Sistema di Monitoraggio con Consenso Ventola"));
 
-  // Imposta i LED come output
+  // Configurazione LED
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
+  // Inizializzazione sensore e servo
   dht.begin();
+  mioServo.attach(PIN_SERVO);
+  mioServo.write(0); // Posizione iniziale (fermo)
 }
-
-
-unsigned long lastTime = 0;
-const long interval = 2000; // Invia dati ogni 2 secondi
 
 void loop() {
   unsigned long currentTime = millis();
   String stato;
 
+  // 1. Logica Sensori e Comunicazione (Ogni 2 secondi)
   if (currentTime - lastTime >= interval) {
     float h = dht.readHumidity();
     float t = dht.readTemperature();
-    
     float hic = dht.computeHeatIndex(t, h, false);
 
     if (!isnan(h) && !isnan(t)) {
-      // 1. Gestione LED (Logica esistente corretta)
       digitalWrite(LED_RED, LOW);
       digitalWrite(LED_YELLOW, LOW);
       digitalWrite(LED_GREEN, LOW);
 
-      if(hic > 30){
-        stato = "Temperatura troppo alta, raffredare il sistema!!!";
+      if (hic > 30) {
+        stato = "PERICOLO: Temperatura critica! Ventola ATTIVA.";
         digitalWrite(LED_RED, HIGH);
-      }else if(hic > 25){
-        stato = "Temperatura in aumento, vicino alla soglia di massima sopportazione";
+      } 
+      else if (hic > 25) {
+        stato = "Attenzione: Temperatura in aumento.";
         digitalWrite(LED_YELLOW, HIGH);
-      }else if(hic > 15){
-        stato = "Temperatura ambiente, stato accetabile";
+      } 
+      else if (hic > 15) {
+        stato = "Temperatura ottimale.";
         digitalWrite(LED_GREEN, HIGH);
-      }else if(hic > 10){
-        stato = "Temperatura è in diminuzione, vicino alla soglia di massima sopportazione";
-        digitalWrite(LED_YELLOW, HIGH);
-      }else{
-        stato = "Temperatura troppo bassa, scaldare il sistema!!!";
+      } 
+      else {
+        stato = "Temperatura troppo bassa.";
         digitalWrite(LED_RED, HIGH);
       }
 
-      Serial.print(F("Humidity: "));
+      // Invio dati formattati per il programma Python
+      Serial.print(("Humidity: "));
       Serial.print(h);
-      Serial.print(F("%  Temperature: "));
+      Serial.print(("%  Temperature: "));
       Serial.print(t);
-      Serial.print(F("°C "));
-      Serial.print(F("  Heat index: "));
+      Serial.print(("°C "));
+      Serial.print(("  Heat index: "));
       Serial.print(hic);
-      Serial.println(F("°C "));
+      Serial.println(("°C "));
       Serial.println(stato);
     }
     lastTime = currentTime;
+  }
+
+  // 2. Controllo Servo (Automatico basato su soglia)
+  float t_check = dht.readTemperature();
+
+  if (t_check > 30) {
+    // Il ventilatore gira automaticamente
+    for (pos = 0; pos <= 180; pos += 10) {
+      mioServo.write(pos);
+      delay(15);
+    }
+    for (pos = 180; pos >= 0; pos -= 10) {
+      mioServo.write(pos);
+      delay(15);
+    }
+  } else {
+    mioServo.write(0); // Resta fermo se la temperatura è sotto i 30°C
   }
 }
