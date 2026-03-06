@@ -16,7 +16,7 @@ Il progetto consiste in un sistema di monitoraggio ambientale basato sul paradig
 ### 2. Software (Interfaccia e Grafica)
 * **Linguaggio**: Python.
 * **GUI**: Sviluppata con **Dear PyGui**.
-* **Comunicazione**: Seriale a 9600 baud con parsing tramite espressioni regolari (Regex).
+* **Comunicazione**: Seriale a 9600 baud.
 
 ---
 
