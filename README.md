@@ -1,43 +1,56 @@
 # Sistema di Monitoraggio per l'Efficienza Energetica
 
 ## Descrizione del Progetto
-Questo progetto realizza un sistema completo per il monitoraggio dei parametri ambientali interni (temperatura e umidità), con l'obiettivo di ottimizzare i consumi energetici e promuovere comportamenti sostenibili. Il sistema segue il paradigma **produttore-consumatore**, dove un'unità Arduino acquisisce i dati e un'applicazione Python li analizza e visualizza.
+Il progetto consiste in un sistema di monitoraggio ambientale basato sul paradigma **produttore-consumatore**. Un'unità Arduino (produttore) rileva temperatura e umidità, mentre un'applicazione Python (consumatore) elabora i dati, gestisce un database CSV e fornisce un'interfaccia grafica avanzata per l'analisi energetica.
 
 ## Architettura del Sistema
 
-### 1. Hardware (Produttore)
+### 1. Hardware e Simulazione
 * **Microcontrollore**: Arduino Uno.
-* **Sensore**: DHT22 per la misura di temperatura e umidità durante la simulazione su Wokwi e un DHT11 nel montaggio fisico.
-* **Attuatori**: 
-  * **3 LED** (Rosso, Giallo, Verde) per il feedback visivo immediato sullo stato del microclima.
-  * **Servomotore**: Simula le pale di un ventilatore che si attiva automaticamente in caso di emergenza termica.
+* **Sensore**: DHT22 (in simulazione Wokwi) e DHT11 (nel montaggio fisico).
+* **Feedback Visivo**: 3 LED (Verde, Giallo, Rosso) per segnalare lo stato del microclima in tempo reale.
+* **Nota sul Servomotore**: 
+  * **In simulazione**: È stato implementato un servomotore che agisce come ventilatore automatico sopra i 30°C.
+  * **Parte fisica**: Il servomotore non è presente nel montaggio reale per mancanza del componente specifico (il motore DC a disposizione richiederebbe un driver di potenza dedicato). La logica di controllo rimane comunque attiva nel codice e segnalata tramite il LED Rosso.
 
-### 2. Software (Consumatore)
-* **Linguaggio**: Python.
-* **Interfaccia Grafica**: Sviluppata con la libreria **Dear PyGui** per la visualizzazione in tempo reale e dei grafici storici.
-* **Comunicazione**: Seriale via USB con formato a pacchetti sincronizzati.
-
----
-
-## Funzionamento e Logica di Controllo
-Il sistema monitora costantemente l'indice di calore (*Heat Index*). In base ai valori rilevati, il sistema reagisce come segue:
-* **T > 30°C**: Stato critico. LED Rosso acceso e **attivazione automatica del servomotore** (ventilatore) per il raffreddamento.
-* **25°C < T <= 30°C**: Temperatura in aumento. LED Giallo acceso.
-* **15°C < T <= 25°C**: Stato ottimale. LED Verde acceso.
-* **T <= 15°C**: Temperatura troppo bassa. LED Rosso acceso.
+### 2. Software (Interfaccia e Grafica)
+* **Linguaggio**: Python 3.
+* **GUI**: Sviluppata con **Dear PyGui**.
+* **Comunicazione**: Seriale a 9600 baud con parsing tramite espressioni regolari (Regex).
 
 ---
 
-## Struttura del Repository
-* `/Arduino`: Contiene lo sketch `.ino` per la gestione di sensori, LED e servo.
-* `/Python`: Contiene l'applicazione `monitoraggio_interfaccia.py`.
-* `monitoraggio_energetico.csv`: File di database contenente lo storico delle misurazioni.
-* `README.md`: Relazione tecnica del progetto.
+## Analisi del Grafico e della Dashboard
+L'interfaccia grafica è stata progettata per offrire un'analisi dinamica e leggibile dei dati:
+
+### Caratteristiche del Grafico
+* **Auto-Scaling Dinamico**: Il grafico utilizza la funzione `fit_axis_data` per adattare costantemente gli assi X e Y. Questo evita che la curva venga "tagliata" o risulti illeggibile quando la temperatura subisce variazioni (aumento o diminuzione), garantendo la visibilità dell'intero set di dati.
+* **Buffer Circolare**: Il grafico mostra gli ultimi 100 campionamenti con effetto di scorrimento continuo.
+* **Sidebar di Riepilogo**: Una colonna dedicata visualizza i dati in tempo reale separati dal grafico:
+  * **Temperatura Istantanea**: Ultima lettura rilevata.
+  * **Media Sessione**: Calcolata dinamicamente su tutte le letture dall'avvio.
+  * **Umidità**: Valore percentuale attuale.
+
+---
+
+## Sincronizzazione e Gestione Dati
+* **Multithreading**: La lettura seriale avviene su un thread separato per non bloccare la fluidità della GUI.
+* **Persistenza CSV**: I dati vengono salvati nel file `monitoraggio_energetico.csv` nel seguente formato:
+  `{ Data, Orario, Umidità, Temperatura, Trend }`
+* **Analisi del Trend**: Il software confronta la temperatura attuale con la precedente per determinare se il valore è "In aumento", "In diminuzione" o "Stabile".
 
 ---
 
 ## Requisiti e Installazione
-1. Caricare il codice presente nella cartella `/Arduino` sulla scheda.
-2. Installare le dipendenze Python:
-   ```bash
-   pip install pyserial dearpygui
+1. Caricare lo sketch `/Arduino` sulla scheda.
+2. Installare le librerie: `pip install dearpygui pyserial`.
+3. Avviare lo script: `python monitoraggio_interfaccia.py`.
+
+---
+
+## Team di Progetto
+Questo lavoro è stato realizzato in collaborazione dal seguente gruppo di lavoro:
+
+* Egeonu Chibueike Frank
+* Topala Ignat
+* Derkach Oleksandr
