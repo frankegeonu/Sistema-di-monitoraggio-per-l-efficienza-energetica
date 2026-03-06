@@ -14,7 +14,7 @@ Il progetto consiste in un sistema di monitoraggio ambientale basato sul paradig
   * **Parte fisica**: Il servomotore non è presente nel montaggio reale per mancanza del componente specifico (il motore DC a disposizione richiederebbe un driver di potenza dedicato). La logica di controllo rimane comunque attiva nel codice e segnalata tramite il LED Rosso.
 
 ### 2. Software (Interfaccia e Grafica)
-* **Linguaggio**: Python 3.
+* **Linguaggio**: Python.
 * **GUI**: Sviluppata con **Dear PyGui**.
 * **Comunicazione**: Seriale a 9600 baud con parsing tramite espressioni regolari (Regex).
 
