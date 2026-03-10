@@ -49,8 +49,7 @@ L'interfaccia grafica è stata progettata per offrire un'analisi dinamica e legg
 ---
 
 ## Team di Progetto
-Questo lavoro è stato realizzato in collaborazione dal seguente gruppo di lavoro:
+Questo lavoro è stato realizzato da:
 
 * Egeonu Chibueike Frank
-* Topala Ignat
-* Derkach Oleksandr
+
