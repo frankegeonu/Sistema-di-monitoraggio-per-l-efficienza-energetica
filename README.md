@@ -18,7 +18,6 @@ Il progetto consiste in un sistema di monitoraggio ambientale basato sul paradig
 * **GUI**: Sviluppata con **Dear PyGui**.
 * **Comunicazione**: Seriale a 9600 baud.
 
----
 
 ## Analisi del Grafico e della Dashboard
 L'interfaccia grafica è stata progettata per offrire un'analisi dinamica e leggibile dei dati:
@@ -31,7 +30,6 @@ L'interfaccia grafica è stata progettata per offrire un'analisi dinamica e legg
   * **Media Sessione**: Calcolata dinamicamente su tutte le letture dall'avvio.
   * **Umidità**: Valore percentuale attuale.
 
----
 
 ## Sincronizzazione e Gestione Dati
 * **Multithreading**: La lettura seriale avviene su un thread separato per non bloccare la fluidità della GUI.
@@ -39,14 +37,12 @@ L'interfaccia grafica è stata progettata per offrire un'analisi dinamica e legg
   `{ Data, Orario, Umidità, Temperatura, Trend }`
 * **Analisi del Trend**: Il software confronta la temperatura attuale con la precedente per determinare se il valore è "In aumento", "In diminuzione" o "Stabile".
 
----
 
 ## Requisiti e Installazione
 1. Caricare lo sketch `/Arduino` sulla scheda.
 2. Installare le librerie: `pip install dearpygui pyserial`.
 3. Avviare lo script: `python monitoraggio_interfaccia.py`.
 
----
 
 ## Team di Progetto
 Questo lavoro è stato realizzato da:
