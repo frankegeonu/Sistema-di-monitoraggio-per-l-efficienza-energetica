@@ -37,6 +37,42 @@ L'interfaccia grafica è stata progettata per offrire un'analisi dinamica e legg
   `{ Data, Orario, Umidità, Temperatura, Trend }`
 * **Analisi del Trend**: Il software confronta la temperatura attuale con la precedente per determinare se il valore è "In aumento", "In diminuzione" o "Stabile".
 
+## Versioni del Progetto
+
+### Versione 1 — File unico
+
+La prima versione del progetto è contenuta in un singolo file Python: `monitoraggio_interfaccia.py`.
+
+In questo script convivono tutte le responsabilità del sistema:
+
+- La lettura dei dati dalla porta seriale viene gestita da un thread in background (`serial_reader`), che decodifica le righe ricevute da Arduino, calcola il trend di temperatura e scrive ogni rilevazione nel file CSV.
+- L'interfaccia grafica viene costruita e aggiornata nella funzione `update_gui`, chiamata a ogni frame del loop principale di Dear PyGui.
+- Il loop principale tiene insieme lettura, aggiornamento GUI e rendering in un unico ciclo continuo.
+
+Questa struttura è semplice da avviare — basta eseguire un solo file — ma mescola la logica di acquisizione dati con quella di presentazione, rendendo più difficile modificare o testare le due parti separatamente.
+
+---
+
+### Versione 2 — Separazione lettura e interfaccia
+
+La seconda versione divide il progetto in due script indipendenti che comunicano tramite il file CSV condiviso `monitoraggio_energetico.csv`.
+
+#### `lettore_dati.py`
+
+Si occupa esclusivamente di acquisire i dati:
+
+- Apre la connessione seriale con Arduino e rimane in ascolto.
+- Per ogni riga ricevuta, estrae umidità e temperatura tramite regex, calcola il trend rispetto alla lettura precedente e scrive una nuova riga nel CSV con data, orario e valori formattati.
+- In caso di errore sulla porta seriale, attende 5 secondi e ritenta automaticamente la connessione.
+
+#### `monitoraggio_interfaccia.py`
+
+Si occupa esclusivamente di mostrare i dati:
+
+- Legge il CSV ad intervalli regolari (ogni 1,5 secondi) tenendo traccia di quante righe ha già processato, così da leggere solo le nuove ad ogni ciclo.
+- Aggiorna i widget della dashboard: temperatura istantanea, media di sessione, umidità, trend con colore dinamico e grafico dell'andamento termico.
+- Funziona indipendentemente da `lettore_seriale.py`: può essere avviato anche su una macchina diversa, purché abbia accesso al CSV.
+
 
 ## Requisiti e Installazione
 1. Caricare lo sketch `/Arduino` sulla scheda.
