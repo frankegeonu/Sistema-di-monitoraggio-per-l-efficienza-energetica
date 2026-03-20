@@ -77,7 +77,7 @@ Si occupa esclusivamente di mostrare i dati:
 ## Requisiti e Installazione
 1. Caricare lo sketch `/Arduino` sulla scheda.
 2. Installare le librerie: `pip install dearpygui pyserial`.
-3. Avviare lo script: `python monitoraggio_interfaccia.py`.
+
 
 
 ## Team di Progetto
