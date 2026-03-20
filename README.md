@@ -57,7 +57,7 @@ Questa struttura è semplice da avviare — basta eseguire un solo file — ma m
 
 La seconda versione divide il progetto in due script indipendenti che comunicano tramite il file CSV condiviso `monitoraggio_energetico.csv`.
 
-#### `lettore_dati.py`
+`lettore_dati.py`
 
 Si occupa esclusivamente di acquisire i dati:
 
@@ -65,7 +65,7 @@ Si occupa esclusivamente di acquisire i dati:
 - Per ogni riga ricevuta, estrae umidità e temperatura tramite regex, calcola il trend rispetto alla lettura precedente e scrive una nuova riga nel CSV con data, orario e valori formattati.
 - In caso di errore sulla porta seriale, attende 5 secondi e ritenta automaticamente la connessione.
 
-#### `monitoraggio_interfaccia.py`
+`monitoraggio_interfaccia.py`
 
 Si occupa esclusivamente di mostrare i dati:
 
